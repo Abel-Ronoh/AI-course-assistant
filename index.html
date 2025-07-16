@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Zetech Chatbot</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-header">
+      <p>Zetech Course Assistant</p>
+      <p onclick="openBasket()" id="basket-button" style="cursor: pointer; position: relative;">
+  <img src="assets/bskt.png" alt="Basket" style="width: 28px; height: 28px;">
+  <span id="basket-count" class="badge">0</span>
+</p>
+</div>
+    
+    <div class="chat-box" id="chat-box">
+      <!-- Messages will appear here -->
+    </div>
+    <div class="chat-input-area">
+      <input type="text" id="user-input" placeholder="Type your message..." />
+      <button id="send-btn">Send</button>
+    </div>
+
+  </div>
+
+
+  <div class="basket-slide" id="basketSlide">
+    <button class="basket-close" onclick="closeBasket()">← Back to Chat</button>
+    <iframe src="basket.html" id="basketFrame"></iframe>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

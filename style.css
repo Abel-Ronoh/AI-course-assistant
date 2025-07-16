@@ -1,0 +1,231 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #041E42;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.basket{
+  cursor: pointer;
+  width: 25px;
+  height: 25px;
+}
+#basket-button {
+  position: relative;
+  display: inline-block;
+}
+
+.badge {
+  background-color: #4caf50;
+  color: white;
+  padding: 2px 6px;
+  font-size: 11px;
+  border-radius: 50%;
+  position: absolute;
+  top: -6px;
+  right: -6px;
+}
+
+
+
+.chat-container {
+  background-color: #041E42;
+  color: white;
+  width: 100%;
+  height: 100%;
+  border-radius: 15px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.chat-header {
+  background-color: #062e63;
+  padding: 5px 15px 5px 15px;
+  font-size: 18px;
+  text-align: center;
+  font-weight:500;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chat-box {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.message {
+  padding: 10px 15px;
+  border-radius: 18px;
+  max-width: 75%;
+  line-height: 1.4;
+  color: white;
+}
+
+.user {
+  background-color: #0a3c82;
+  align-self: flex-end;
+}
+
+.bot {
+  background-color: #123a68;
+  align-self: flex-start;
+}
+
+.chat-input-area {
+  display: flex;
+  padding: 10px;
+  background-color: #062e63;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.chat-input-area input {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 25px;
+  background-color: #0a3c82;
+  color: white;
+  margin-right: 10px;
+  outline: none;
+}
+
+.chat-input-area button {
+  background-color: #1c54a5;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.chat-input-area button:hover {
+  background-color: #2a6ad7;
+}
+
+
+
+.option-button {
+  background-color: #1c54a5;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.option-button:hover {
+  background-color: #2a6ad7;
+}
+
+.course-card {
+  background: #072A60;
+  color: white;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 10px;
+  border: 1px solid #10407A;
+}
+
+.course-card button {
+  margin-top: 6px;
+  margin-right: 8px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: #10407A;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.toggle-btn {
+  background: #2080e0;
+}
+
+.cart-btn {
+  background: #4caf50;
+}
+
+
+
+
+.course-card {
+  background: #fff2;
+  border-radius: 10px;
+  padding: 10px 15px;
+  margin: 10px;
+  color: white;
+}
+
+.toggle-btn, .cart-btn {
+  margin-top: 5px;
+  margin-right: 10px;
+  padding: 4px 10px;
+  border: none;
+  background: #073B6F;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+
+/* Basket slide-in panel */
+.basket-slide {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 100%;
+  max-width: 400px;
+  height: 100%;
+  background-color: #041E42;
+  color: white;
+  z-index: 10;
+  transition: right 0.5s ease;
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+}
+
+/* When active, slide it into view */
+.basket-slide.active {
+  right: 0;
+}
+
+/* The iframe takes up full panel */
+.basket-slide iframe {
+  flex: 1;
+  width: 100%;
+  border: none;
+  background-color: #041E42;
+}
+
+/* Close button inside the basket panel */
+.basket-close {
+  background-color: #062e63;
+  border: none;
+  color: white;
+  padding: 12px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  text-align: left;
+  font-weight: bold;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.basket-close:hover {
+  background-color: #0a3c82;
+}

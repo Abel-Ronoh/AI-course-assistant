@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Your Basket</title>
+  <style>
+    body {
+      background-color: #041E42;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    .course-card {
+      background: #072A60;
+      border: 1px solid #10407A;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+
+    .course-card h4 {
+      margin: 0 0 8px;
+    }
+
+    .course-card p {
+      margin: 4px 0;
+    }
+
+    .empty {
+      font-style: italic;
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <h2>🧺 Your Selected Courses</h2>
+  <div id="basket"></div>
+
+  <script>
+    const container = document.getElementById('basket');
+    const basket = JSON.parse(localStorage.getItem('basket')) || [];
+
+    if (basket.length === 0) {
+      container.innerHTML = '<p class="empty">No courses in your cart yet.</p>';
+    } else {
+      basket.forEach(course => {
+        const div = document.createElement('div');
+        div.className = 'course-card';
+        div.innerHTML = `
+          <h4>🎓 ${course.course_name}</h4>
+          ${course.qualification_level ? `<p>📚 ${course.qualification_level}</p>` : ""}
+          ${course.duration ? `<p>⏳ ${course.duration}</p>` : ""}
+          ${course.fee ? `<p>💰 ${course.fee}</p>` : ""}
+          ${course.description ? `<p>${course.description}</p>` : ""}
+        `;
+        container.appendChild(div);
+      });
+    }
+  </script>
+</body>
+</html>

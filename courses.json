@@ -1,0 +1,105 @@
+[
+  {
+    "course_name": "Bachelor of Science in Information Technology",
+    "qualification_level": "Degree",
+    "category": "IT",
+    "duration": "4 years",
+    "fee": "KES 95,000 per semester",
+    "intake": "January, May, September",
+    "min_grade": "C+",
+    "subject_requirements": {
+      "math": "C",
+      "english": "C+"
+    }
+  },
+  {
+    "course_name": "Diploma in Information Technology",
+    "qualification_level": "Diploma",
+    "category": "IT",
+    "duration": "2 years",
+    "fee": "KES 85,000 per semester",
+    "intake": "January, May, September",
+    "min_grade": "C",
+    "subject_requirements": {
+      "math": "C",
+      "english": "D+"
+    }
+  },
+  {
+    "course_name": "Certificate in Information Technology",
+    "qualification_level": "Certificate",
+    "category": "IT",
+    "duration": "1 year",
+    "fee": "KES 65,000 per semester",
+    "intake": "January, May, September",
+    "min_grade": "D",
+    "subject_requirements": {
+      "math": "D",
+      "english": "D"
+    }
+  },
+  {
+    "course_name": "Diploma in Electrical and Electronics Engineering",
+    "qualification_level": "Diploma",
+    "category": "Engineering",
+    "duration": "2.5 years",
+    "fee": "KES 92,000 per semester",
+    "intake": "January, May, September",
+    "min_grade": "C",
+    "subject_requirements": {
+      "math": "C+",
+      "physics": "C"
+    }
+  },
+  {
+    "course_name": "Bachelor of Education (Arts)",
+    "qualification_level": "Degree",
+    "category": "Education",
+    "duration": "4 years",
+    "fee": "KES 89,000 per semester",
+    "intake": "January, May, September",
+    "min_grade": "C+",
+    "subject_requirements": {
+      "english": "C+",
+      "kiswahili": "C"
+    }
+  },
+  {
+    "course_name": "Certificate in Early Childhood Education",
+    "qualification_level": "Certificate",
+    "category": "Education",
+    "duration": "1 year",
+    "fee": "KES 55,000 per semester",
+    "intake": "January, May, September",
+    "min_grade": "D+",
+    "subject_requirements": {
+      "english": "D+"
+    }
+  },
+  {
+    "course_name": "Diploma in Business Management",
+    "qualification_level": "Diploma",
+    "category": "Business",
+    "duration": "2 years",
+    "fee": "KES 80,000 per semester",
+    "intake": "January, May, September",
+    "min_grade": "C-",
+    "subject_requirements": {
+      "math": "D+",
+      "english": "C-"
+    }
+  },
+  {
+    "course_name": "Bachelor of Business Administration",
+    "qualification_level": "Degree",
+    "category": "Business",
+    "duration": "4 years",
+    "fee": "KES 93,000 per semester",
+    "intake": "January, May, September",
+    "min_grade": "C+",
+    "subject_requirements": {
+      "math": "C",
+      "english": "C+"
+    }
+  }
+]
