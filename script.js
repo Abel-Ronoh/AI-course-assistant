@@ -8,11 +8,28 @@ let userGrades = {};
 let allCourses = [];
 let currentStep = null;
 
+window.addEventListener('storage', function(e) {
+  if (e.key === 'basket') {
+    // Reload the basket count from localStorage
+    dummyCart = JSON.parse(localStorage.getItem('basket')) || [];
+    updateBasketCount();
+  }
+});
 
 // Load course data
-fetch('courses.json')
-  .then(res => res.json())
-  .then(data => allCourses = data);
+fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vTNFxMs_mv_qiqPT5vW0fwiLla3f-jc1guyHjhznezAj8ov7YrfgWs5fgGeMzAG877lGYCh9Y5L6ckW/pub?output=csv')
+  .then(res => res.text())
+  .then(csv => {
+    // Simple CSV to JSON (for demo; use PapaParse for robust parsing)
+    const [header, ...rows] = csv.trim().split('\n');
+    const keys = header.split(',');
+    allCourses = rows.map(row => {
+      const values = row.split(',');
+      const obj = {};
+      keys.forEach((k, i) => obj[k.trim()] = values[i]?.trim());
+      return obj;
+    });
+  });
 
 // Utility: Append message to chat
 function appendMessage(content, type = 'bot') {
@@ -68,22 +85,28 @@ function gradeToScore(grade) {
     "A": 12, "A-": 11, "B+": 10, "B": 9, "B-": 8,
     "C+": 7, "C": 6, "C-": 5, "D+": 4, "D": 3, "D-": 2, "E": 1
   };
-  return scale[grade.toUpperCase()] || 0;
+  return scale[grade?.toUpperCase()] || 0;
 }
 
-// Show matched courses
+// Show matched courses (only those the user qualifies for)
 function showRecommendedCourses() {
   if (!allCourses.length) {
     appendMessage("Courses are still loading. Try again shortly.");
     return;
   }
 
+  // Filter courses based on user grades
   const matches = allCourses.filter(course => {
+    // Check mean grade
     if (userGrades.mean && gradeToScore(userGrades.mean) < gradeToScore(course.min_grade)) return false;
-    if (course.subject_requirements) {
-      for (const subject in course.subject_requirements) {
-        if (userGrades[subject] &&
-            gradeToScore(userGrades[subject]) < gradeToScore(course.subject_requirements[subject])) {
+
+    // Check subject requirements (if present)
+    // Assume subject requirements are in columns like 'math_req', 'english_req', etc.
+    for (const key in userGrades) {
+      if (key === "mean") continue;
+      const reqKey = key + "_req";
+      if (course[reqKey] && course[reqKey].trim() !== "" && course[reqKey].trim().toUpperCase() !== "N/A" && course[reqKey].trim() !== "-") {
+        if (gradeToScore(userGrades[key]) < gradeToScore(course[reqKey])) {
           return false;
         }
       }
@@ -92,14 +115,15 @@ function showRecommendedCourses() {
   });
 
   if (!matches.length) {
-    appendMessage("Sorry, no matching courses found based on your grades.");
+    appendMessage("Sorry, based on your KCSE grades, there are no courses you currently qualify for.");
+    currentStep = null;
     return;
   }
 
-  appendMessage("Here are some suitable courses:");
+  appendMessage("Based on your KCSE grades, you qualify for the following courses:");
   matches.forEach(displayCourseCard);
   appendMessage("Click 'More Description' or 'Add to Cart' for more options.");
-  currentStep = null;
+  currentStep = null; // Allow normal conversation after showing courses
 }
 
 // Display individual course card
@@ -146,10 +170,8 @@ function addToCart(course) {
   dummyCart.push(course);
   localStorage.setItem('basket', JSON.stringify(dummyCart));
   appendMessage(`✅ "${course.course_name}" added to your cart.`);
-  updateBasketCount(); // ✅ Refresh badge immediately
+  updateBasketCount(); // This updates the badge on the chat page immediately
 }
-
-
 
 // For GPT dynamic response
 function displayDynamicCourseCard(course) {
@@ -194,9 +216,27 @@ function displayDynamicCourseCard(course) {
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
+
+function showLoadingAnimation() {
+  // Remove any existing loading animation
+  removeLoadingAnimation();
+  const loadingMsg = document.createElement('div');
+  loadingMsg.classList.add('message', 'bot', 'loading-animation');
+  loadingMsg.innerHTML = `<span class="dot"></span><span class="dot"></span><span class="dot"></span>`;
+  chatBox.appendChild(loadingMsg);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function removeLoadingAnimation() {
+  const loading = chatBox.querySelector('.loading-animation');
+  if (loading) loading.remove();
+}
+
 // GPT handling
 function handleFreeQuestion(userText) {
   const context = JSON.stringify(userGrades);
+
+  showLoadingAnimation();
 
   fetch('http://localhost:3000/ask', {
     method: 'POST',
@@ -209,6 +249,7 @@ function handleFreeQuestion(userText) {
   })
     .then(res => res.json())
     .then(data => {
+      removeLoadingAnimation();
       const reply = data.reply || "I'm not sure. Try rephrasing?";
 
       const courseLines = reply.split("\n").filter(line => /^\d+\.\s/.test(line));
@@ -233,6 +274,7 @@ function handleFreeQuestion(userText) {
       }
     })
     .catch(err => {
+      removeLoadingAnimation();
       console.error(err);
       appendMessage("Sorry, I couldn't reach the course advisor right now.");
     });
@@ -252,10 +294,14 @@ sendBtn.addEventListener('click', () => {
     else if (currentStep === "english") askGrade("kiswahili");
     else if (currentStep === "kiswahili") askGrade("chemistry");
     else if (currentStep === "chemistry") askGrade("physics");
-    else if (currentStep === "physics") showRecommendedCourses();
+    else if (currentStep === "physics") {
+      showRecommendedCourses();
+      currentStep = null; // Allow normal conversation after showing courses
+    }
     return;
   }
 
+  // After grade entry, allow normal LLM conversation
   handleFreeQuestion(text);
 });
 

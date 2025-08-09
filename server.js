@@ -10,8 +10,8 @@ app.use(cors());
 app.use(bodyParser.json());
 
 const openai = new OpenAI({
-  apiKey: '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'
-});
+  apiKey: '', // Paste your API key here
+  });
 
 // Replace this with your published Google Sheet CSV URL
 const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTNFxMs_mv_qiqPT5vW0fwiLla3f-jc1guyHjhznezAj8ov7YrfgWs5fgGeMzAG877lGYCh9Y5L6ckW/pub?output=csv';

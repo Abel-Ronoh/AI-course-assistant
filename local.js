@@ -1,7 +1,8 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import fs from 'fs';
+import fetch from 'node-fetch';
+import csv from 'csvtojson';
 
 const app = express();
 const PORT = 3000;
@@ -10,11 +11,24 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Load courses once at startup
-const courses = JSON.parse(fs.readFileSync('./courses.json', 'utf-8'));
+const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTNFxMs_mv_qiqPT5vW0fwiLla3f-jc1guyHjhznezAj8ov7YrfgWs5fgGeMzAG877lGYCh9Y5L6ckW/pub?output=csv';
 
+// Fetch and parse course data from Google Sheets
+async function getCoursesFromGoogleSheet() {
+  try {
+    const response = await fetch(sheetUrl);
+    const csvText = await response.text();
+    const courses = await csv().fromString(csvText);
+    return courses;
+  } catch (err) {
+    console.error('Error fetching Google Sheet:', err);
+    return [];
+  }
+}
 // Conversation history store (per session)
 const conversations = {};
-
+(async () => {
+const courses = await getCoursesFromGoogleSheet();
 // Generate course summary for prompt injection
 const courseSummaries = courses.map(course => 
   `- ${course.course_name} (${course.qualification_level}) — ${course.duration}, Fee: ${course.fee}. Minimum Grade: ${course.min_grade}. Description: ${course.description}`
@@ -90,4 +104,91 @@ app.post('/ask', async (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`✅ Local LLM Course Advisor running at http://localhost:${PORT}`);
+});
+})();
+
+
+
+
+
+
+
+app.get('/ask-stream', async (req, res) => {
+  const { sessionId, question, context = '' } = req.query;
+  if (!sessionId || !question) {
+    res.status(400).end();
+    return;
+  }
+
+  // Set headers for SSE
+  res.set({
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    'Connection': 'keep-alive'
+  });
+  res.flushHeaders();
+
+  // Prepare conversation as before...
+  if (!conversations[sessionId]) {
+    conversations[sessionId] = [
+      { role: 'system', content: systemPrompt }
+    ];
+    if (context) {
+      conversations[sessionId].push({
+        role: 'user',
+        content: `Student context: ${context}`
+      });
+    }
+  }
+  conversations[sessionId].push({
+    role: 'user',
+    content: question
+  });
+
+  try {
+    // Stream from Ollama
+    const ollamaRes = await fetch('http://localhost:11434/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'qwen:1.8b',
+        messages: conversations[sessionId],
+        stream: true
+      })
+    });
+
+    if (!ollamaRes.body) throw new Error('No stream from LLM');
+
+    let reply = '';
+    const reader = ollamaRes.body.getReader();
+    const decoder = new TextDecoder();
+
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      const chunk = decoder.decode(value, { stream: true });
+      // Ollama streams JSON lines, parse and extract content
+      for (const line of chunk.split('\n')) {
+        if (!line.trim()) continue;
+        try {
+          const data = JSON.parse(line);
+          if (data.message && data.message.content) {
+            reply += data.message.content;
+            res.write(`data: ${data.message.content}\n\n`);
+          }
+        } catch (e) { /* ignore parse errors */ }
+      }
+    }
+
+    // Save full reply
+    conversations[sessionId].push({
+      role: 'assistant',
+      content: reply
+    });
+    res.write('event: end\ndata: END\n\n');
+    res.end();
+  } catch (err) {
+    res.write('event: error\ndata: ERROR\n\n');
+    res.end();
+  }
 });
